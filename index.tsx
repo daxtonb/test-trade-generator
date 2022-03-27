@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
+import Form from './components/form'
 import './style.css';
 
 interface AppProps {}
@@ -16,7 +17,11 @@ class App extends Component<AppProps, AppState> {
   }
 
   render() {
-    return <div></div>;
+    return (
+      <div>
+        <Form />
+      </div>
+    );
   }
 }
 
