@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { QuantityType } from '../contracts/enums/QuantityType';
 import { TradeSide } from '../contracts/enums/TradeSide';
 import IAccountTrade from '../contracts/IAccountTrade';
@@ -7,6 +7,8 @@ import OptionSelector from './shared/optionSelector';
 import { v4 as uuidv4 } from 'uuid';
 import { RoutingType } from '../contracts/enums/RoutingType';
 import TextInput from './shared/textInput';
+import IAllocationTrade from '../contracts/IAllocationTrade';
+import textInput from './shared/textInput';
 
 export default () => {
   const requestId = uuidv4();
@@ -20,38 +22,29 @@ export default () => {
   const [routingType, setRoutingType] = React.useState(RoutingType.STP);
   const [quantityMin, setQuantityMin] = React.useState(3);
   const [quantityMax, setQuantityMax] = React.useState(5);
+  const [allocationTradeMax, setallocationTradeMax] = React.useState(5);
 
   const buildAccountTrades = (): IAccountTrade[] => {
     const accountTrades: IAccountTrade[] = [];
-    const tradeSides = Object.entries(TradeSide);
-    console.log(tradeSides);
-    for (let i = 0; i < accountTradeCount; i++) {
-      const accountTrade: IAccountTrade = {
-        requestId: requestId,
-        routingType: routingType ?? RoutingType.STP,
-        ticker: ticker,
-        symbolId: symbolId,
-        accountId: accountId,
-        brokerageId: brokerageId,
-        side: tradeSide,
-        quantity: getRandomInt(quantityMin, quantityMax),
-        quantityType: quantityType,
-        fullRedeem: false,
-        accountQuantityBuiltAt: 0,
-        complianceAccountTradeId: undefined,
-        allocationTrades: [],
-        lotTrades: [],
-        externalReferences: [],
-      };
 
-      // Randomly select trade side
-      if (!tradeSide) {
-        accountTrade.side =
-          tradeSides[getRandomInt(tradeSides.length, tradeSides.length)[1]];
-      }
-      if (accountTrade.side == TradeSide.SELL) {
-        accountTrade.quantity *= -1;
-      }
+    for (let i = 0; i < accountTradeCount; i++) {
+      const accountTrade = buildAccountTrade(
+        requestId,
+        routingType,
+        ticker,
+        symbolId,
+        brokerageId,
+        accountId,
+        tradeSide,
+        quantityMin,
+        quantityMax,
+        quantityType
+      );
+
+      accountTrade.allocationTrades = buildAllocationTrades(
+        accountTrade,
+        allocationTradeMax
+      );
 
       accountTrades.push(accountTrade);
     }
@@ -63,69 +56,75 @@ export default () => {
     buildAccountTrades()
   );
 
-  const handleInput = (value: any, handler: (value: any) => void) => {
-    handler(value);
-    setAccountTrades(buildAccountTrades());
-  };
+  useEffect(() => {
+    setAccountTrades(buildAccountTrades);
+  }, [
+    accountTradeCount,
+    ticker,
+    symbolId,
+    brokerageId,
+    accountId,
+    tradeSide,
+    quantityType,
+    routingType,
+    quantityMin,
+    quantityMax,
+    allocationTradeMax,
+  ]);
 
   return (
     <div>
       <TextInput
         label="Account Trade Count"
         value={accountTradeCount}
-        onChange={(x) => handleInput(x, setAccountTradeCount)}
+        onChange={setAccountTradeCount}
       />
-      <TextInput
-        label="Ticker"
-        value={ticker}
-        onChange={(x) => handleInput(x, setTicker)}
-      />
-      <TextInput
-        label="Symobl ID"
-        value={symbolId}
-        onChange={(x) => handleInput(x, setSymbolId)}
-      />
+      <TextInput label="Ticker" value={ticker} onChange={setTicker} />
+      <TextInput label="Symobl ID" value={symbolId} onChange={setSymbolId} />
       <TextInput
         label="Brokerage ID"
         value={brokerageId}
-        onChange={(x) => handleInput(x, setBrokerageId)}
+        onChange={setBrokerageId}
       />
-      <TextInput
-        label="Account ID"
-        value={accountId}
-        onChange={(x) => handleInput(x, setAccountId)}
-      />
+      <TextInput label="Account ID" value={accountId} onChange={setAccountId} />
       <OptionSelector
         label="Trade Side"
         options={TradeSide}
-        onChange={(x) => handleInput(x, setTradeSide)}
+        onChange={setTradeSide}
         includeMixed
       />
       <OptionSelector
         label="Quantity Type"
         options={QuantityType}
-        onChange={(x) => handleInput(x, setQuantityType)}
+        onChange={setQuantityType}
         includeMixed
       />
       <OptionSelector
         label="Routing Type"
         options={RoutingType}
-        onChange={(x) => handleInput(x, setRoutingType)}
+        onChange={setRoutingType}
       />
       <MinMaxInput
-        label="Quantity"
+        label="Account Trade Quantity Range"
         minDefault={quantityMin}
         maxDefault={quantityMax}
-        onMinChange={(x) => handleInput(x, setQuantityMin)}
-        onMaxChange={(x) => handleInput(x, setQuantityMax)}
+        onMinChange={setQuantityMin}
+        onMaxChange={setQuantityMax}
+      />
+      <TextInput
+        label="Max Sleeve Count"
+        value={allocationTradeMax}
+        onChange={setallocationTradeMax}
       />
       <div>Request ID: {requestId}</div>
       {accountTrades && (
         <div>
           Total Quantity:{' '}
-          {accountTrades
-            .map((x) => x.quantity)
-            .reduce((prev, curr) => prev + curr)}{' '}
+          {accountTrades &&
+            accountTrades.length &&
+            accountTrades
+              .map((x) => x.quantity)
+              .reduce((prev, curr) => prev + curr)}{' '}
         </div>
       )}
       <div className="input-group">
@@ -142,12 +141,96 @@ export default () => {
   );
 };
 
-function getRandomInt(min: number, max: number): number {
+const TRADE_SIDES = Object.entries(TradeSide);
+const QUANTITY_TYPES = Object.entries(QuantityType);
+
+function getRandomInt(min: number, max?: number): number {
   if (min === max) {
     return min;
   }
 
+  if (!max) {
+    return Math.floor(Math.random() * min);
+  }
+
   min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min) + min + 1);
+  max = Math.floor(max) + 1;
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
+function buildAccountTrade(
+  requestId: string,
+  routingType: RoutingType,
+  ticker: string,
+  symbolId: string,
+  brokerageId: string,
+  accountId: string,
+  tradeSide: TradeSide,
+  quantityMin: number,
+  quantityMax: number,
+  quantityType: QuantityType
+): IAccountTrade {
+  const accountTrade: IAccountTrade = {
+    requestId: requestId,
+    routingType: routingType ?? RoutingType.STP,
+    ticker: ticker,
+    symbolId: symbolId,
+    accountId: accountId,
+    brokerageId: brokerageId,
+    side: tradeSide,
+    quantity: getRandomInt(quantityMin, quantityMax),
+    quantityType: quantityType,
+    fullRedeem: false,
+    accountQuantityBuiltAt: 0,
+    complianceAccountTradeId: undefined,
+    allocationTrades: [],
+    lotTrades: [],
+    externalReferences: [],
+  };
+
+  // Randomly select trade side
+  if (!tradeSide) {
+    accountTrade.side = TRADE_SIDES[getRandomInt(TRADE_SIDES.length)][1];
+  }
+  if (accountTrade.side == TradeSide.SELL) {
+    accountTrade.quantity *= -1;
+  }
+
+  if (!quantityType) {
+    accountTrade.quantityType =
+      QUANTITY_TYPES[getRandomInt(QUANTITY_TYPES.length)][1];
+  }
+
+  return accountTrade;
+}
+
+function buildAllocationTrades(
+  accountTrade: IAccountTrade,
+  countMax: number
+): IAllocationTrade[] {
+  const allocationTrades: IAllocationTrade[] = [];
+  const count = getRandomInt(countMax);
+  let remainingQuantity = accountTrade.quantity;
+
+  for (let i = 0; i < count; i++) {
+    const allocationTrade: IAllocationTrade = {
+      allocationId: uuidv4(),
+      quantity: 0,
+      side: accountTrade.side,
+    };
+    if (remainingQuantity == 0) {
+      break;
+    } else if (i == count - 1) {
+      allocationTrade.quantity = remainingQuantity;
+    } else {
+      const percent = getRandomInt(10, 60) / 100;
+
+      allocationTrade.quantity = Math.floor(percent * remainingQuantity) ?? 1;
+      remainingQuantity -= allocationTrade.quantity;
+    }
+
+    allocationTrades.push(allocationTrade);
+  }
+
+  return allocationTrades;
 }

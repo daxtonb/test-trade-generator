@@ -25,17 +25,15 @@ export default ({
       <label htmlFor={minName}>Min</label>
       <input
         name={minName}
-        defaultValue={minDefault.toString()}
+        value={minDefault}
         onChange={(e) => onMinChange(e.target.value)}
       />
-      <label
-        htmlFor={maxName}
-        defaultValue={maxDefault.toString()}
+      <label htmlFor={maxName}>Max</label>
+      <input
+        name={maxName}
+        value={maxDefault}
         onChange={(e) => onMaxChange(e.target.value)}
-      >
-        Max
-      </label>
-      <input name={maxName} />
+      />
     </div>
   );
 };
