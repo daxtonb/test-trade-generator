@@ -14,7 +14,6 @@ export default ({ label, value, onChange }: Props) => {
       <input
         name={name}
         type="text"
-        defaultValue={value}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
