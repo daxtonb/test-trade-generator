@@ -75,23 +75,26 @@ export default () => {
         label="Trade Side"
         options={TradeSide}
         onChange={setTradeSide}
+        value={tradeSide}
         includeMixed
       />
       <OptionSelector
         label="Quantity Type"
         options={QuantityType}
         onChange={setQuantityType}
+        value={quantityType}
         includeMixed
       />
       <OptionSelector
         label="Routing Type"
         options={RoutingType}
         onChange={setRoutingType}
+        value={routingType}
       />
       <MinMaxInput
         label="Account Trade Quantity Range"
-        minDefault={quantityMin}
-        maxDefault={quantityMax}
+        minValue={quantityMin}
+        maxValue={quantityMax}
         onMinChange={setQuantityMin}
         onMaxChange={setQuantityMax}
       />
@@ -102,8 +105,8 @@ export default () => {
           {accountTrades &&
             accountTrades.length &&
             accountTrades
-              .map((x) => x.quantity)
-              .reduce((prev, curr) => prev + curr)}{' '}
+              .map((x: IAccountTrade) => x.quantity)
+              .reduce((prev: number, curr: number) => prev + curr)}{' '}
         </div>
       )}
       <div className="input-group">

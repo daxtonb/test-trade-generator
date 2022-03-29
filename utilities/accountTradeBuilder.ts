@@ -2,7 +2,6 @@ import { QuantityType } from '../contracts/enums/QuantityType';
 import { RoutingType } from '../contracts/enums/RoutingType';
 import { TradeSide } from '../contracts/enums/TradeSide';
 import IAccountTrade from '../contracts/IAccountTrade';
-import IAllocationTrade from '../contracts/IAllocationTrade';
 import { v4 as uuidv4 } from 'uuid';
 
 const TRADE_SIDES = Object.entries(TradeSide);
@@ -89,7 +88,7 @@ function buildAccountTrade(
     externalReferences: [],
   };
 
-  // Randomly select trade side
+  // If "mixed" was selected, tradeSide will be undefined. Assign this value randomly.
   if (!tradeSide) {
     accountTrade.side = TRADE_SIDES[getRandomInt(TRADE_SIDES.length)][1];
   }
@@ -97,6 +96,7 @@ function buildAccountTrade(
     accountTrade.quantity *= -1;
   }
 
+  // If "mixed" was selected, quantityType will be undefined. Assign this value randomly.
   if (!quantityType) {
     accountTrade.quantityType =
       QUANTITY_TYPES[getRandomInt(QUANTITY_TYPES.length)][1];
