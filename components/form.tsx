@@ -8,6 +8,9 @@ import { RoutingType } from '../contracts/enums/RoutingType';
 import TextInput from './shared/textInput';
 import buildAccountTrade from '../utilities/accountTradeBuilder';
 import { v4 as uuidv4 } from 'uuid';
+import convertToSql from '../utilities/convertToSql';
+import PendingAccountTrade from '../contracts/database/PendingAccountTrade';
+import IDbEntities from '../contracts/database/IDbEntities';
 
 export default () => {
   const requestId = uuidv4();
@@ -55,6 +58,14 @@ export default () => {
     quantityMin,
     quantityMax,
   ]);
+
+  const pendingAccountTradeDbEntities: IDbEntities<PendingAccountTrade> = {
+    dbName: 'db_trading1',
+    dbTableName: 'PendingAccountTrade',
+    entities: accountTrades.map(
+      (x: IAccountTrade) => new PendingAccountTrade(x)
+    ),
+  };
 
   return (
     <div>
@@ -109,6 +120,16 @@ export default () => {
               .reduce((prev: number, curr: number) => prev + curr)}{' '}
         </div>
       )}
+      <div className="input-group">
+        <label htmlFor="json">SQL</label>
+        <textarea
+          name="json"
+          rows={50}
+          cols={100}
+          readOnly={true}
+          value={convertToSql(pendingAccountTradeDbEntities)}
+        ></textarea>
+      </div>
       <div className="input-group">
         <label htmlFor="json">JSON</label>
         <textarea
