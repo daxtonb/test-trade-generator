@@ -11,3 +11,10 @@ select {
 .input-group {
   margin: 16px;
 }
+
+.input-group.radio {
+  display: flex;
+}
+.input-group.radio p {
+  margin: 0 8px 0 8px;
+}

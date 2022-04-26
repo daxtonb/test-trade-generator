@@ -13,6 +13,9 @@ import PendingAccountTrade from '../contracts/database/PendingAccountTrade';
 import IDbEntities from '../contracts/database/IDbEntities';
 import IAllocationTrade from '../contracts/IAllocationTrade';
 import PendingAllocationTrade from '../contracts/database/PendingAllocationTrade';
+import { AssetType } from '../contracts/enums/AssetType';
+import PendingMfAccountTrade from '../contracts/database/PendinfMfAccountTrade';
+import PendingMfAllocationTrade from '../contracts/database/PendingMfAllocationTrade';
 
 export default () => {
   const requestId = uuidv4();
@@ -26,6 +29,7 @@ export default () => {
   const [routingType, setRoutingType] = React.useState(RoutingType.STP);
   const [quantityMin, setQuantityMin] = React.useState(3);
   const [quantityMax, setQuantityMax] = React.useState(5);
+  const [assetType, setAssetType] = React.useState(AssetType.Equity);
 
   const buildAccountTrades = (): IAccountTrade[] =>
     buildAccountTrade(
@@ -59,9 +63,10 @@ export default () => {
     routingType,
     quantityMin,
     quantityMax,
+    assetType,
   ]);
 
-  const sql: string = BuildSql(accountTrades);
+  const sql: string = BuildSql(accountTrades, assetType);
 
   return (
     <div>
@@ -105,6 +110,12 @@ export default () => {
         onMinChange={setQuantityMin}
         onMaxChange={setQuantityMax}
       />
+      <OptionSelector
+        label="Asset Type"
+        options={AssetType}
+        onChange={setAssetType}
+        value={assetType}
+      />
       <div>Request ID: {requestId}</div>
       {accountTrades && (
         <div>
@@ -140,36 +151,50 @@ export default () => {
   );
 };
 
-function BuildSql(accountTrades: IAccountTrade[]) {
-  const accountQuantity: number = accountTrades &&
-  accountTrades.length &&
-  accountTrades
-    .map((x: IAccountTrade) => x.quantity)
-    .reduce((prev: number, curr: number) => prev + curr);
+function BuildSql(accountTrades: IAccountTrade[], assetType: AssetType) {
+  const accountQuantity: number =
+    accountTrades &&
+    accountTrades.length &&
+    accountTrades
+      .map((x: IAccountTrade) => x.quantity)
+      .reduce((prev: number, curr: number) => prev + curr);
 
-  const pendingAccountTradeDbEntities: IDbEntities<PendingAccountTrade> = {
+  const pendingAccountTradeDbEntities: IDbEntities<
+    PendingAccountTrade | PendingMfAccountTrade
+  > = {
     dbName: 'db_trading1',
-    dbTableName: 'PendingAccountTrade',
-    entities: accountTrades.map(
-      (x: IAccountTrade) => new PendingAccountTrade(x, accountQuantity)
+    dbTableName:
+      assetType === AssetType.MutualFund
+        ? 'PendingMfAccountTrade'
+        : 'PendingAccountTrade',
+    entities: accountTrades.map((x: IAccountTrade) =>
+      assetType === AssetType.MutualFund
+        ? new PendingMfAccountTrade(x, accountQuantity)
+        : new PendingAccountTrade(x, accountQuantity)
     ),
   };
 
-  const pendingAllocationTradeDbEntities: IDbEntities<PendingAllocationTrade> =
-    {
-      dbName: 'db_trading1',
-      dbTableName: 'PendingAllocationTrade',
-      entities: accountTrades
-        .map((x: IAccountTrade) =>
-          x.allocationTrades.map(
-            (y: IAllocationTrade) => new PendingAllocationTrade(x, y)
-          )
+  const pendingAllocationTradeDbEntities: IDbEntities<
+    PendingAllocationTrade | PendingMfAllocationTrade
+  > = {
+    dbName: 'db_trading1',
+    dbTableName:
+      assetType === AssetType.MutualFund
+        ? 'PendingMfAllocationTrade'
+        : 'PendingAllocationTrade',
+    entities: accountTrades
+      .map((x: IAccountTrade) =>
+        x.allocationTrades.map((y: IAllocationTrade) =>
+          assetType === AssetType.MutualFund
+            ? new PendingMfAllocationTrade(x, y)
+            : new PendingAllocationTrade(x, y)
         )
-        .reduce(
-          (prev: PendingAllocationTrade[], next: PendingAllocationTrade[]) =>
-            prev && [...prev, ...next]
-        ),
-    };
+      )
+      .reduce(
+        (prev: PendingAllocationTrade[], next: PendingAllocationTrade[]) =>
+          prev && [...prev, ...next]
+      ),
+  };
 
   const entities: IDbEntities<any>[] = [
     pendingAccountTradeDbEntities,
