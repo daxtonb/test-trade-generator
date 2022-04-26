@@ -1,9 +1,9 @@
-import { TradeSide } from '../enums/TradeSide';
 import { TradeSideId } from '../enums/TradeSideId';
 import { WorkflowRoute } from '../enums/WorkflowRoute';
 import IPendingAccountTrade from './IPendingAccountTrade';
 import { v4 as uuidv4 } from 'uuid';
 import IAccountTrade from '../IAccountTrade';
+import convertSide from '../../utilities/sideConverter';
 
 export default class PendingAccountTrade implements IPendingAccountTrade {
   public accountId: string;
@@ -45,16 +45,6 @@ export default class PendingAccountTrade implements IPendingAccountTrade {
     this.ticker = accountTrade.ticker;
     this.symbolId = accountTrade.symbolId;
     this.tradeQuantity = accountTrade.quantity;
-
-    switch (accountTrade.side) {
-      case TradeSide.BUY:
-        this.sideId = TradeSideId.Buy;
-        break;
-      case TradeSide.SELL:
-        this.sideId = TradeSideId.Sell;
-        break;
-      default:
-        throw new Error(`Unknown trade side: ${accountTrade.side}`);
-    }
+    this.sideId = convertSide(accountTrade.side);
   }
 }

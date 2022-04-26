@@ -11,6 +11,8 @@ import { v4 as uuidv4 } from 'uuid';
 import convertToSql from '../utilities/convertToSql';
 import PendingAccountTrade from '../contracts/database/PendingAccountTrade';
 import IDbEntities from '../contracts/database/IDbEntities';
+import IAllocationTrade from '../contracts/IAllocationTrade';
+import PendingAllocationTrade from '../contracts/database/PendingAllocationTrade';
 
 export default () => {
   const requestId = uuidv4();
@@ -59,13 +61,7 @@ export default () => {
     quantityMax,
   ]);
 
-  const pendingAccountTradeDbEntities: IDbEntities<PendingAccountTrade> = {
-    dbName: 'db_trading1',
-    dbTableName: 'PendingAccountTrade',
-    entities: accountTrades.map(
-      (x: IAccountTrade) => new PendingAccountTrade(x)
-    ),
-  };
+  const sql: string = BuildSql(accountTrades);
 
   return (
     <div>
@@ -124,17 +120,17 @@ export default () => {
         <label htmlFor="json">SQL</label>
         <textarea
           name="json"
-          rows={50}
+          rows={10}
           cols={100}
           readOnly={true}
-          value={convertToSql(pendingAccountTradeDbEntities)}
+          value={sql}
         ></textarea>
       </div>
       <div className="input-group">
         <label htmlFor="json">JSON</label>
         <textarea
           name="json"
-          rows={50}
+          rows={10}
           cols={100}
           readOnly={true}
           value={JSON.stringify(accountTrades)}
@@ -143,3 +139,40 @@ export default () => {
     </div>
   );
 };
+
+function BuildSql(accountTrades: IAccountTrade[]) {
+  const pendingAccountTradeDbEntities: IDbEntities<PendingAccountTrade> = {
+    dbName: 'db_trading1',
+    dbTableName: 'PendingAccountTrade',
+    entities: accountTrades.map(
+      (x: IAccountTrade) => new PendingAccountTrade(x)
+    ),
+  };
+
+  const pendingAllocationTradeDbEntities: IDbEntities<PendingAllocationTrade> =
+    {
+      dbName: 'db_trading1',
+      dbTableName: 'PendingAllocationTrade',
+      entities: accountTrades
+        .map((x: IAccountTrade) =>
+          x.allocationTrades.map(
+            (y: IAllocationTrade) => new PendingAllocationTrade(x, y)
+          )
+        )
+        .reduce(
+          (prev: PendingAllocationTrade[], next: PendingAllocationTrade[]) =>
+            prev && [...prev, ...next]
+        ),
+    };
+
+  const entities: IDbEntities<any>[] = [
+    pendingAccountTradeDbEntities,
+    pendingAllocationTradeDbEntities,
+  ];
+  let workingString = '';
+  for (let entitiy of entities) {
+    workingString += convertToSql(entitiy) + '\n\n';
+  }
+
+  return workingString.trim();
+}

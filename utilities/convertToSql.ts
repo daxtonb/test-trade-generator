@@ -5,9 +5,9 @@ function convertToSql<T extends object>(dbEntities: IDbEntities<T>) {
     return '';
   }
 
-  return `INSERT INTO ${dbEntities.dbName}..${dbEntities.dbTableName}
+  return `INSERT INTO ${dbEntities.dbName}.${dbEntities.dbTableName}
   (${Object.keys(dbEntities.entities[0])
-    .map((x) => `[${x}]`)
+    .map((x) => x.substring(0, 1).toUpperCase() + x.substring(1))
     .reduce((prev, next) => prev + ', ' + next)})
     VALUES ${dbEntities.entities
       .map(
@@ -16,7 +16,7 @@ function convertToSql<T extends object>(dbEntities: IDbEntities<T>) {
             .map((y) => getValueAsSql(y))
             .reduce((prev, next) => prev + ', ' + next)})`
       )
-      .reduce((prev, next) => prev + '\n, ' + next)}`;
+      .reduce((prev, next) => prev + '\n, ' + next)};`;
 }
 
 function getValueAsSql(value: any): string {

@@ -1,4 +1,3 @@
-import { TradeSide } from '../enums/TradeSide';
 import { TradeSideId } from '../enums/TradeSideId';
 import { WorkflowRoute } from '../enums/WorkflowRoute';
 

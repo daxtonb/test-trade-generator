@@ -17,7 +17,7 @@ export default ({
 }: Props) => {
   const minName = label + '-min';
   const maxName = label + '-max';
-  console.log(minValue)
+
   return (
     <div className="input-group">
       <label>{label}</label>
