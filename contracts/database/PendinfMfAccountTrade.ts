@@ -30,23 +30,23 @@ export default class PendingMfAccountTrade implements IPendingMfAccountTrade {
   public updatedBy?: string;
   public updatedOn?: Date;
 
-  constructor(accountTrade: IAccountTrade, accountQuantity: number) {
+  constructor(accountTrade: IAccountTrade) {
     this.pendingMfAccountTradeId = uuidv4();
     this.orderGeneratedTimestamp = new Date();
     this.workflowRouteId = WorkflowRoute.flyer;
     this.createdBy = 'test';
     this.createdOn = this.orderGeneratedTimestamp;
-    this.MapFrom(accountTrade, accountQuantity);
+    this.MapFrom(accountTrade);
   }
 
-  private MapFrom(accountTrade: IAccountTrade, accountQuantity: number) {
+  private MapFrom(accountTrade: IAccountTrade) {
     this.accountId = accountTrade.accountId;
     this.ticker = accountTrade.ticker;
     this.symbolId = accountTrade.symbolId;
     this.brokerageId = accountTrade.brokerageId;
     this.qtyType = convertQauntityType(accountTrade.quantityType);
     this.sideId = convertSide(accountTrade.side);
-    this.currentAccountQty = accountQuantity;
+    this.currentAccountQty = 0;
 
     if (accountTrade.quantityType == QuantityType.CASH) {
       this.cashOrderQty = accountTrade.quantity;

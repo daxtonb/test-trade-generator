@@ -16,6 +16,8 @@ import PendingAllocationTrade from '../contracts/database/PendingAllocationTrade
 import { AssetType } from '../contracts/enums/AssetType';
 import PendingMfAccountTrade from '../contracts/database/PendinfMfAccountTrade';
 import PendingMfAllocationTrade from '../contracts/database/PendingMfAllocationTrade';
+import IPendingAccountTrade from '../contracts/database/IPendingAccountTrade';
+import IPendingMfAccountTrade from '../contracts/database/IPendingMfAccountTrade';
 
 export default () => {
   const requestId = uuidv4();
@@ -169,7 +171,7 @@ function BuildSql(accountTrades: IAccountTrade[], assetType: AssetType) {
         : 'PendingAccountTrade',
     entities: accountTrades.map((x: IAccountTrade) =>
       assetType === AssetType.MutualFund
-        ? new PendingMfAccountTrade(x, accountQuantity)
+        ? new PendingMfAccountTrade(x)
         : new PendingAccountTrade(x, accountQuantity)
     ),
   };
@@ -183,11 +185,23 @@ function BuildSql(accountTrades: IAccountTrade[], assetType: AssetType) {
         ? 'PendingMfAllocationTrade'
         : 'PendingAllocationTrade',
     entities: accountTrades
-      .map((x: IAccountTrade) =>
+      .map((x: IAccountTrade, index: number) =>
         x.allocationTrades.map((y: IAllocationTrade) =>
           assetType === AssetType.MutualFund
-            ? new PendingMfAllocationTrade(x, y)
-            : new PendingAllocationTrade(x, y)
+            ? new PendingMfAllocationTrade(
+                x,
+                y,
+                pendingAccountTradeDbEntities.entities[
+                  index
+                ] as IPendingMfAccountTrade
+              )
+            : new PendingAllocationTrade(
+                x,
+                y,
+                pendingAccountTradeDbEntities.entities[
+                  index
+                ] as IPendingAccountTrade
+              )
         )
       )
       .reduce(
