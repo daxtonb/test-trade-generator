@@ -19,6 +19,7 @@ function convertToSql<T extends object>(dbEntities: IDbEntities<T>) {
       .reduce((prev, next) => prev + '\n, ' + next)};`;
 }
 
+const dateTimeFormat = new Intl.DateTimeFormat();
 function getValueAsSql(value: any): string {
   if (value === undefined || value === null) {
     return 'NULL';
@@ -29,7 +30,9 @@ function getValueAsSql(value: any): string {
   } else if (typeof value === 'boolean') {
     return value ? '1' : '0';
   } else if (value instanceof Date) {
-    return `'${value.toLocaleDateString()}'`;
+    return `'${value.getFullYear()}-${
+      value.getMonth() + 1
+    }-${value.getDate()} ${value.getHours()}:${value.getMinutes()}:${value.getSeconds()}'`;
   } else {
     throw new Error(`Unanticipated SQL value: ${value}`);
   }
