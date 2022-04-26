@@ -21,21 +21,21 @@ export default class PendingAccountTrade implements IPendingAccountTrade {
   public accountHarvestRequestId?: string;
   public workflowRouteId: WorkflowRoute;
   public isApm: boolean;
-  public allocationTradeVolumne: number;
+  public allocationTradeVolume: number;
   public isSent: boolean;
   public sentTime?: Date;
   public masterAccountId?: string;
 
-  constructor(accountTrade: IAccountTrade) {
+  constructor(accountTrade: IAccountTrade, accountQuantity: number) {
     this.mapFrom(accountTrade);
 
     this.pendingAccountTradeId = uuidv4();
     this.batchBuildEventId = uuidv4();
-    this.accountQuantity = 0;
+    this.accountQuantity = accountQuantity;
     this.createdOn = new Date();
     this.workflowRouteId = WorkflowRoute.flyer;
     this.isApm = false;
-    this.allocationTradeVolumne = 0;
+    this.allocationTradeVolume = 0;
     this.isSent = false;
   }
 

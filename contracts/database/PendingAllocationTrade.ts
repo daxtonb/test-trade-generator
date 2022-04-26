@@ -7,6 +7,7 @@ import convertSide from '../../utilities/sideConverter';
 
 export default class PendingAllocationTrade implements IPendingAllocationTrade {
   public pendingAccountTradeId: string;
+  public allocationId: string;
   public ticker: string;
   public tradeQuantity: number;
   public allocationQuantity: number;
@@ -28,6 +29,7 @@ export default class PendingAllocationTrade implements IPendingAllocationTrade {
     accountTrade: IAccountTrade,
     allocationTrade: IAllocationTrade
   ) {
+    this.allocationId = allocationTrade.allocationId;
     this.ticker = accountTrade.ticker;
     this.tradeQuantity = accountTrade.quantity;
     this.allocationQuantity = allocationTrade.quantity;

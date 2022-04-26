@@ -141,11 +141,17 @@ export default () => {
 };
 
 function BuildSql(accountTrades: IAccountTrade[]) {
+  const accountQuantity: number = accountTrades &&
+  accountTrades.length &&
+  accountTrades
+    .map((x: IAccountTrade) => x.quantity)
+    .reduce((prev: number, curr: number) => prev + curr);
+
   const pendingAccountTradeDbEntities: IDbEntities<PendingAccountTrade> = {
     dbName: 'db_trading1',
     dbTableName: 'PendingAccountTrade',
     entities: accountTrades.map(
-      (x: IAccountTrade) => new PendingAccountTrade(x)
+      (x: IAccountTrade) => new PendingAccountTrade(x, accountQuantity)
     ),
   };
 

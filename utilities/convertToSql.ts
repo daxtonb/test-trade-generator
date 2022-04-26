@@ -20,7 +20,7 @@ function convertToSql<T extends object>(dbEntities: IDbEntities<T>) {
 }
 
 function getValueAsSql(value: any): string {
-  if (!value) {
+  if (value === undefined || value === null) {
     return 'NULL';
   } else if (typeof value === 'string') {
     return `'${value}'`;

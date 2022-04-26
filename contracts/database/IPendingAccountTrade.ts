@@ -16,7 +16,7 @@ export default interface IPendingAccountTrade {
   accountHarvestRequestId?: string;
   workflowRouteId: WorkflowRoute;
   isApm: boolean;
-  allocationTradeVolumne: number;
+  allocationTradeVolume: number;
   isSent: boolean;
   sentTime?: Date;
   masterAccountId?: string;

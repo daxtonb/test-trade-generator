@@ -3,6 +3,7 @@ import { TradeSideId } from '../enums/TradeSideId';
 export default interface PendingAllocationTrade {
   pendingAccountTradeId: string;
   ticker: string;
+  allocationId: string;
   tradeQuantity: number;
   allocationQuantity: number;
   sideId: TradeSideId;
