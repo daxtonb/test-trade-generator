@@ -18,6 +18,7 @@ import PendingMfAccountTrade from '../contracts/database/PendinfMfAccountTrade';
 import PendingMfAllocationTrade from '../contracts/database/PendingMfAllocationTrade';
 import IPendingAccountTrade from '../contracts/database/IPendingAccountTrade';
 import IPendingMfAccountTrade from '../contracts/database/IPendingMfAccountTrade';
+import convertFromTradeRouting from '../utilities/tradeComplianceConverter';
 
 export default () => {
   const requestId = uuidv4();
@@ -140,7 +141,17 @@ export default () => {
         ></textarea>
       </div>
       <div className="input-group">
-        <label htmlFor="json">JSON</label>
+        <label htmlFor="json">JSON (Trade Compliance)</label>
+        <textarea
+          name="json"
+          rows={10}
+          cols={100}
+          readOnly={true}
+          value={JSON.stringify(convertFromTradeRouting(accountTrades))}
+        ></textarea>
+      </div>
+      <div className="input-group">
+        <label htmlFor="json">JSON (Trade Routing)</label>
         <textarea
           name="json"
           rows={10}
