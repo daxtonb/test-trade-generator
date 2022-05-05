@@ -7,6 +7,8 @@ export default function convertSide(tradeSide: TradeSide): TradeSideId {
       return TradeSideId.Buy;
     case TradeSide.SELL:
       return TradeSideId.Sell;
+    case TradeSide.FLAT:
+      return TradeSideId.Flat;
     default:
       throw new Error(`Unknown trade side: ${tradeSide}`);
   }

@@ -38,6 +38,15 @@ export default (
 
     setAllocationTrades(accountTrade);
 
+    // Lazy way of handling flat trades.
+    if (tradeSide === TradeSide.FLAT) {
+      accountTrade.allocationTrades.push({
+        ...accountTrade.allocationTrades[0],
+        quantity: -accountTrade.quantity,
+      });
+      accountTrade.quantity = 0;
+    }
+
     accountTrades.push(accountTrade);
   }
 
@@ -115,7 +124,10 @@ function setAllocationTrades(accountTrade: IAccountTrade) {
 
     accountTrade.allocationTrades.push({
       allocationId: uuidv4(),
-      side: accountTrade.side,
+      side:
+        accountTrade.side === TradeSide.FLAT
+          ? TradeSide.BUY
+          : accountTrade.side,
       quantity: accountTrade.side == TradeSide.SELL ? -quantity : quantity,
     });
 
