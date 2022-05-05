@@ -43,6 +43,7 @@ export default (
       accountTrade.allocationTrades.push({
         ...accountTrade.allocationTrades[0],
         quantity: -accountTrade.quantity,
+        side: TradeSide.SELL,
       });
       accountTrade.quantity = 0;
     }
