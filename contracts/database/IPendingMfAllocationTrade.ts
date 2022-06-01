@@ -1,6 +1,6 @@
-import { TradeSideId } from "../enums/TradeSideId";
+import { TradeSideId } from '../enums/TradeSideId';
 
-export default interface {
+export default interface PendingMfAllocationTrade {
   pendingMfAccountTradeId: string;
   allocationId: string;
   quantity: number;

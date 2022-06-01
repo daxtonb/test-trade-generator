@@ -28,6 +28,7 @@ export default class PendingAllocationTrade implements IPendingAllocationTrade {
     this.createdOn = new Date();
     this.modelId = '0e347207-2cd4-4874-b7c4-9be4aee65660'; // can this be random?
     this.mapFrom(accountTrade, allocationTrade);
+    console.log(this);
   }
 
   private mapFrom(
@@ -36,7 +37,7 @@ export default class PendingAllocationTrade implements IPendingAllocationTrade {
   ) {
     this.allocationId = allocationTrade.allocationId;
     this.ticker = accountTrade.ticker;
-    this.tradeQuantity = accountTrade.quantity;
+    this.tradeQuantity = allocationTrade.quantity;
     this.allocationQuantity = allocationTrade.quantity;
     this.sideId = convertSide(accountTrade.side);
   }

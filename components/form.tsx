@@ -131,7 +131,7 @@ export default () => {
         </div>
       )}
       <div className="input-group">
-        <label htmlFor="json">SQL</label>
+        <label htmlFor="json">SQL (Trade Cache)</label>
         <textarea
           name="json"
           rows={10}
@@ -220,6 +220,7 @@ function BuildSql(accountTrades: IAccountTrade[], assetType: AssetType) {
           prev && [...prev, ...next]
       ),
   };
+  console.log(pendingAllocationTradeDbEntities);
 
   const entities: IDbEntities<any>[] = [
     pendingAccountTradeDbEntities,

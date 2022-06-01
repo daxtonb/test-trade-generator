@@ -31,6 +31,7 @@ export default class PendingAccountTrade implements IPendingAccountTrade {
 
     this.pendingAccountTradeId = uuidv4();
     this.batchBuildEventId = uuidv4();
+    this.buildEventId = uuidv4();
     this.accountQuantity = accountQuantity;
     this.createdOn = new Date();
     this.workflowRouteId = WorkflowRoute.flyer;
