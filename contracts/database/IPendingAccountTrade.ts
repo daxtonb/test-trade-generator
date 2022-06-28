@@ -19,5 +19,5 @@ export default interface IPendingAccountTrade {
   allocationTradeVolume: number;
   isSent: boolean;
   sentTime?: Date;
-  masterAccountId?: string;
+  executionRouteSetId?: string;
 }

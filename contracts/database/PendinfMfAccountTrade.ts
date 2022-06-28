@@ -29,13 +29,15 @@ export default class PendingMfAccountTrade implements IPendingMfAccountTrade {
   public createdOn: Date;
   public updatedBy?: string;
   public updatedOn?: Date;
+  public executionRouteSetId?: string;
 
-  constructor(accountTrade: IAccountTrade) {
+  constructor(accountTrade: IAccountTrade, executionRouteSetId?: string) {
     this.pendingMfAccountTradeId = uuidv4();
     this.orderGeneratedTimestamp = new Date();
     this.workflowRouteId = WorkflowRoute.flyer;
     this.createdBy = 'test';
     this.createdOn = this.orderGeneratedTimestamp;
+    this.executionRouteSetId = executionRouteSetId;
     this.MapFrom(accountTrade);
   }
 

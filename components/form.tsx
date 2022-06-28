@@ -33,6 +33,7 @@ export default () => {
   const [quantityMin, setQuantityMin] = React.useState(3);
   const [quantityMax, setQuantityMax] = React.useState(5);
   const [assetType, setAssetType] = React.useState(AssetType.Equity);
+  const [xRouteSetId, setXRouteSetId] = React.useState(undefined);
 
   const buildAccountTrades = (): IAccountTrade[] =>
     buildAccountTrade(
@@ -67,9 +68,10 @@ export default () => {
     quantityMin,
     quantityMax,
     assetType,
+    xRouteSetId,
   ]);
 
-  const sql: string = BuildSql(accountTrades, assetType);
+  const sql: string = BuildSql(accountTrades, assetType, xRouteSetId);
 
   return (
     <div>
@@ -86,6 +88,11 @@ export default () => {
         onChange={setBrokerageId}
       />
       <TextInput label="Account ID" value={accountId} onChange={setAccountId} />
+      <TextInput
+        label="Execution Route Set Id"
+        value={xRouteSetId}
+        onChange={setXRouteSetId}
+      />
       <OptionSelector
         label="Trade Side"
         options={TradeSide}
@@ -164,7 +171,11 @@ export default () => {
   );
 };
 
-function BuildSql(accountTrades: IAccountTrade[], assetType: AssetType) {
+function BuildSql(
+  accountTrades: IAccountTrade[],
+  assetType: AssetType,
+  xRouteSetId?: string
+) {
   const accountQuantity: number =
     accountTrades &&
     accountTrades.length &&
@@ -182,8 +193,8 @@ function BuildSql(accountTrades: IAccountTrade[], assetType: AssetType) {
         : 'PendingAccountTrade',
     entities: accountTrades.map((x: IAccountTrade) =>
       assetType === AssetType.MutualFund
-        ? new PendingMfAccountTrade(x)
-        : new PendingAccountTrade(x, accountQuantity)
+        ? new PendingMfAccountTrade(x, xRouteSetId)
+        : new PendingAccountTrade(x, accountQuantity, xRouteSetId)
     ),
   };
 

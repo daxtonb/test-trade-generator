@@ -22,4 +22,5 @@ export default interface IPendingMfAccountTrade {
   createdOn: Date;
   updatedBy?: string;
   updatedOn?: Date;
+  executionRouteSetId?: string;
 }

@@ -24,9 +24,13 @@ export default class PendingAccountTrade implements IPendingAccountTrade {
   public allocationTradeVolume: number;
   public isSent: boolean;
   public sentTime?: Date;
-  public masterAccountId?: string;
+  public executionRouteSetId?: string;
 
-  constructor(accountTrade: IAccountTrade, accountQuantity: number) {
+  constructor(
+    accountTrade: IAccountTrade,
+    accountQuantity: number,
+    executionRouteSetId?: string
+  ) {
     this.mapFrom(accountTrade);
 
     this.pendingAccountTradeId = uuidv4();
@@ -38,6 +42,7 @@ export default class PendingAccountTrade implements IPendingAccountTrade {
     this.isApm = false;
     this.allocationTradeVolume = 0;
     this.isSent = false;
+    this.executionRouteSetId = executionRouteSetId;
   }
 
   private mapFrom(accountTrade: IAccountTrade) {
