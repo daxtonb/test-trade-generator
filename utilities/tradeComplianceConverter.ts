@@ -50,10 +50,7 @@ export default function convertFromTradeRouting(
     side,
     tradeQuantity: totalQuantity,
     quantityType,
-    routingType:
-      routingType === RoutingType.STP
-        ? 'straightThroughProcessing'
-        : 'highTouchExecution',
+    routingType: getRoutingType(routingType),
     accountTrades: accountTrades.map((x) => convertFromAccountTrade(x)),
   };
 }
@@ -81,4 +78,17 @@ function convertFromAllocationTrade(
     tradeQuantity: allocationTrade.quantity,
     side: allocationTrade.side,
   };
+}
+
+function getRoutingType(routingType: RoutingType): string {
+  switch (routingType) {
+    case RoutingType.STP:
+      return 'straightThroughProcessing';
+    case RoutingType.HTE:
+      return 'highTouchExecution';
+    case RoutingType.Manual:
+      return 'manual';
+    default:
+      throw new Error(`Unknown routing type ${routingType}`);
+  }
 }
