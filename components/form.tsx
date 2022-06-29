@@ -33,7 +33,7 @@ export default () => {
   const [quantityMin, setQuantityMin] = React.useState(3);
   const [quantityMax, setQuantityMax] = React.useState(5);
   const [assetType, setAssetType] = React.useState(AssetType.Equity);
-  const [xRouteSetId, setXRouteSetId] = React.useState(undefined);
+  const [xRouteSetId, setXRouteSetId] = React.useState(uuidv4());
 
   const buildAccountTrades = (): IAccountTrade[] =>
     buildAccountTrade(
@@ -47,7 +47,8 @@ export default () => {
       tradeSide,
       quantityMin,
       quantityMax,
-      quantityType
+      quantityType,
+      xRouteSetId
     );
 
   const [accountTrades, setAccountTrades] = React.useState(
@@ -193,8 +194,8 @@ function BuildSql(
         : 'PendingAccountTrade',
     entities: accountTrades.map((x: IAccountTrade) =>
       assetType === AssetType.MutualFund
-        ? new PendingMfAccountTrade(x, xRouteSetId)
-        : new PendingAccountTrade(x, accountQuantity, xRouteSetId)
+        ? new PendingMfAccountTrade(x)
+        : new PendingAccountTrade(x, accountQuantity)
     ),
   };
 

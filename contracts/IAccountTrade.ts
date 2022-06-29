@@ -21,4 +21,5 @@ export default interface IAccountTrade {
   allocationTrades: IAllocationTrade[];
   lotTrades: ILotTrade[];
   externalReferences: IExternalTrade[];
+  executionRouteSetId: string;
 }

@@ -18,7 +18,8 @@ export default (
   tradeSide: TradeSide,
   quantityMin: number,
   quantityMax: number,
-  quantityType: QuantityType
+  quantityType: QuantityType,
+  xRouteSetId: string
 ): IAccountTrade[] => {
   const accountTrades: IAccountTrade[] = [];
 
@@ -33,7 +34,8 @@ export default (
       tradeSide,
       quantityMin,
       quantityMax,
-      quantityType
+      quantityType,
+      xRouteSetId
     );
 
     setAllocationTrades(accountTrade);
@@ -78,7 +80,8 @@ function buildAccountTrade(
   tradeSide: TradeSide,
   quantityMin: number,
   quantityMax: number,
-  quantityType: QuantityType
+  quantityType: QuantityType,
+  xRouteSetId: string
 ): IAccountTrade {
   const accountTrade: IAccountTrade = {
     requestId: requestId,
@@ -93,6 +96,7 @@ function buildAccountTrade(
     fullRedeem: false,
     accountQuantityBuiltAt: 0,
     complianceAccountTradeId: undefined,
+    executionRouteSetId: xRouteSetId,
     allocationTrades: [],
     lotTrades: [],
     externalReferences: [],

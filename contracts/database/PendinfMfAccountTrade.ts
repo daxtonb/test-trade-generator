@@ -31,13 +31,12 @@ export default class PendingMfAccountTrade implements IPendingMfAccountTrade {
   public updatedOn?: Date;
   public executionRouteSetId?: string;
 
-  constructor(accountTrade: IAccountTrade, executionRouteSetId?: string) {
+  constructor(accountTrade: IAccountTrade) {
     this.pendingMfAccountTradeId = uuidv4();
     this.orderGeneratedTimestamp = new Date();
     this.workflowRouteId = WorkflowRoute.flyer;
     this.createdBy = 'test';
     this.createdOn = this.orderGeneratedTimestamp;
-    this.executionRouteSetId = executionRouteSetId;
     this.MapFrom(accountTrade);
   }
 
@@ -49,6 +48,7 @@ export default class PendingMfAccountTrade implements IPendingMfAccountTrade {
     this.qtyType = convertQauntityType(accountTrade.quantityType);
     this.sideId = convertSide(accountTrade.side);
     this.currentAccountQty = 0;
+    this.executionRouteSetId = accountTrade.executionRouteSetId;
 
     if (accountTrade.quantityType == QuantityType.CASH) {
       this.cashOrderQty = accountTrade.quantity;
