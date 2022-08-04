@@ -6,7 +6,7 @@ type Props = {
   onChange: (value: any) => void;
 };
 
-export default ({ label, value, onChange }: Props) => {
+export default ({ label, value, onChange, key }: Props) => {
   const name = label.replace(' ', '-');
   return (
     <div className="input-group">
@@ -16,6 +16,7 @@ export default ({ label, value, onChange }: Props) => {
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        key={key}
       />
     </div>
   );

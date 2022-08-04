@@ -26,7 +26,7 @@ export default () => {
   const [ticker, setTicker] = React.useState('TICK');
   const [symbolId, setSymbolId] = React.useState(uuidv4());
   const [brokerageId, setBrokerageId] = React.useState(uuidv4());
-  const [accountId, setAccountId] = React.useState(uuidv4());
+  const [accountIds, setAccountIds] = React.useState([]);
   const [tradeSide, setTradeSide] = React.useState(TradeSide.BUY);
   const [quantityType, setQuantityType] = React.useState(QuantityType.SHARES);
   const [routingType, setRoutingType] = React.useState(RoutingType.STP);
@@ -35,15 +35,30 @@ export default () => {
   const [assetType, setAssetType] = React.useState(AssetType.Equity);
   const [xRouteSetId, setXRouteSetId] = React.useState(uuidv4());
 
+  if (accountIds.length > accountTradeCount) {
+    setAccountIds(accountIds.slice(0, accountTradeCount));
+  }
+
+  for (let i = 0; i < accountTradeCount; i++) {
+    if (!accountIds[i]) {
+      accountIds[i] = uuidv4();
+    }
+  }
+
+  const updateAccountId = (id: string, index: number) => {
+    setAccountIds(
+      accountIds.map((currId, currIndex) => (currIndex === index ? id : currId))
+    );
+  };
+
   const buildAccountTrades = (): IAccountTrade[] =>
     buildAccountTrade(
-      accountTradeCount,
       requestId,
       routingType,
       ticker,
       symbolId,
       brokerageId,
-      accountId,
+      accountIds,
       tradeSide,
       quantityMin,
       quantityMax,
@@ -62,7 +77,7 @@ export default () => {
     ticker,
     symbolId,
     brokerageId,
-    accountId,
+    accountIds,
     tradeSide,
     quantityType,
     routingType,
@@ -88,7 +103,14 @@ export default () => {
         value={brokerageId}
         onChange={setBrokerageId}
       />
-      <TextInput label="Account ID" value={accountId} onChange={setAccountId} />
+      {accountIds.map((id: string, index: number) => (
+        <TextInput
+          label={`Account ID (${index + 1})`}
+          value={id}
+          onChange={(val) => updateAccountId(val, index)}
+          key={index}
+        />
+      ))}
       <TextInput
         label="Execution Route Set Id"
         value={xRouteSetId}
@@ -232,7 +254,6 @@ function BuildSql(
           prev && [...prev, ...next]
       ),
   };
-  console.log(pendingAllocationTradeDbEntities);
 
   const entities: IDbEntities<any>[] = [
     pendingAccountTradeDbEntities,

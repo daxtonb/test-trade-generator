@@ -8,13 +8,12 @@ const TRADE_SIDES = Object.entries(TradeSide);
 const QUANTITY_TYPES = Object.entries(QuantityType);
 
 export default (
-  accountTradeCount: number,
   requestId: string,
   routingType: RoutingType,
   ticker: string,
   symbolId: string,
   brokerageId: string,
-  accountId: string,
+  accountIds: string[],
   tradeSide: TradeSide,
   quantityMin: number,
   quantityMax: number,
@@ -23,14 +22,14 @@ export default (
 ): IAccountTrade[] => {
   const accountTrades: IAccountTrade[] = [];
 
-  for (let i = 0; i < accountTradeCount; i++) {
+  for (let i = 0; i < accountIds.length; i++) {
     const accountTrade = buildAccountTrade(
       requestId,
       routingType,
       ticker,
       symbolId,
       brokerageId,
-      accountId,
+      accountIds[i],
       tradeSide,
       quantityMin,
       quantityMax,
