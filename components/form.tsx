@@ -21,7 +21,7 @@ import IPendingMfAccountTrade from '../contracts/database/IPendingMfAccountTrade
 import convertFromTradeRouting from '../utilities/tradeComplianceConverter';
 
 export default () => {
-  const requestId = uuidv4();
+  const [requestId, setRequestId] = React.useState(uuidv4());
   const [accountTradeCount, setAccountTradeCount] = React.useState(3);
   const [ticker, setTicker] = React.useState('TICK');
   const [symbolId, setSymbolId] = React.useState(uuidv4());
@@ -73,6 +73,7 @@ export default () => {
   useEffect(() => {
     setAccountTrades(buildAccountTrades);
   }, [
+    requestId,
     accountTradeCount,
     ticker,
     symbolId,
@@ -189,6 +190,9 @@ export default () => {
           readOnly={true}
           value={JSON.stringify(accountTrades)}
         ></textarea>
+      </div>
+      <div className="input-group">
+        <button onClick={() => setRequestId(uuidv4())}>Regenerate</button>
       </div>
     </div>
   );
