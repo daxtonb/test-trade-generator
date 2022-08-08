@@ -19,21 +19,52 @@ import PendingMfAllocationTrade from '../contracts/database/PendingMfAllocationT
 import IPendingAccountTrade from '../contracts/database/IPendingAccountTrade';
 import IPendingMfAccountTrade from '../contracts/database/IPendingMfAccountTrade';
 import convertFromTradeRouting from '../utilities/tradeComplianceConverter';
+import { ICookie } from '../contracts/ICookie';
 
 export default () => {
-  const [requestId, setRequestId] = React.useState(uuidv4());
-  const [accountTradeCount, setAccountTradeCount] = React.useState(3);
-  const [ticker, setTicker] = React.useState('TICK');
-  const [symbolId, setSymbolId] = React.useState(uuidv4());
-  const [brokerageId, setBrokerageId] = React.useState(uuidv4());
-  const [accountIds, setAccountIds] = React.useState([]);
-  const [tradeSide, setTradeSide] = React.useState(TradeSide.BUY);
-  const [quantityType, setQuantityType] = React.useState(QuantityType.SHARES);
-  const [routingType, setRoutingType] = React.useState(RoutingType.STP);
-  const [quantityMin, setQuantityMin] = React.useState(3);
-  const [quantityMax, setQuantityMax] = React.useState(5);
-  const [assetType, setAssetType] = React.useState(AssetType.Equity);
-  const [xRouteSetId, setXRouteSetId] = React.useState(uuidv4());
+  const cookieIndex = document.cookie.indexOf('formData');
+  let cookie: ICookie =
+    cookieIndex >= 0
+      ? JSON.parse(document.cookie.substring(cookieIndex + 'formData='.length))
+      : null;
+
+  const [requestId, setRequestId] = React.useState(
+    cookie ? cookie.requestId : uuidv4()
+  );
+  const [accountTradeCount, setAccountTradeCount] = React.useState(
+    cookie ? cookie.accountTradeCount : 3
+  );
+  const [ticker, setTicker] = React.useState(cookie ? cookie.ticker : 'TICK');
+  const [symbolId, setSymbolId] = React.useState(
+    cookie ? cookie.symbolId : uuidv4()
+  );
+  const [brokerageId, setBrokerageId] = React.useState(
+    cookie ? cookie.brokerageId : uuidv4()
+  );
+  const [accountIds, setAccountIds] = React.useState(
+    cookie ? cookie.accountIds : []
+  );
+  const [tradeSide, setTradeSide] = React.useState(
+    cookie ? cookie.tradeSide : TradeSide.BUY
+  );
+  const [quantityType, setQuantityType] = React.useState(
+    cookie ? cookie.quantityType : QuantityType.SHARES
+  );
+  const [routingType, setRoutingType] = React.useState(
+    cookie ? cookie.routingType : RoutingType.STP
+  );
+  const [quantityMin, setQuantityMin] = React.useState(
+    cookie ? cookie.quantityMin : 3
+  );
+  const [quantityMax, setQuantityMax] = React.useState(
+    cookie ? cookie.quantityMax : 5
+  );
+  const [assetType, setAssetType] = React.useState(
+    cookie ? cookie.assetType : AssetType.Equity
+  );
+  const [xRouteSetId, setXRouteSetId] = React.useState(
+    cookie ? cookie.xRouteSetId : uuidv4()
+  );
 
   if (accountIds.length > accountTradeCount) {
     setAccountIds(accountIds.slice(0, accountTradeCount));
@@ -89,6 +120,24 @@ export default () => {
   ]);
 
   const sql: string = BuildSql(accountTrades, assetType, xRouteSetId);
+
+  cookie = {
+    requestId,
+    accountTradeCount,
+    ticker,
+    symbolId,
+    brokerageId,
+    accountIds,
+    tradeSide,
+    quantityType,
+    routingType,
+    quantityMin,
+    quantityMax,
+    assetType,
+    xRouteSetId,
+  };
+
+  document.cookie = 'formData=' + JSON.stringify(cookie);
 
   return (
     <div>
