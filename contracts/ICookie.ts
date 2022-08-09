@@ -1,5 +1,5 @@
 export interface ICookie {
-  requestId: string;
+  state: string;
   accountTradeCount: number;
   ticker: string;
   symbolId: string;

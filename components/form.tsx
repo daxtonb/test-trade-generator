@@ -22,48 +22,52 @@ import convertFromTradeRouting from '../utilities/tradeComplianceConverter';
 import { ICookie } from '../contracts/ICookie';
 
 export default () => {
+  const requestId = uuidv4();
   const cookieIndex = document.cookie.indexOf('formData');
+  console.log(document.cookie.substring(cookieIndex + 'formData='.length));
   let cookie: ICookie =
     cookieIndex >= 0
       ? JSON.parse(document.cookie.substring(cookieIndex + 'formData='.length))
       : null;
 
-  const [requestId, setRequestId] = React.useState(
-    cookie ? cookie.requestId : uuidv4()
+  const [state, setState] = React.useState(
+    (cookie && cookie.state) ?? uuidv4()
   );
   const [accountTradeCount, setAccountTradeCount] = React.useState(
-    cookie ? cookie.accountTradeCount : 3
+    (cookie && cookie.accountTradeCount) ?? 3
   );
-  const [ticker, setTicker] = React.useState(cookie ? cookie.ticker : 'TICK');
+  const [ticker, setTicker] = React.useState(
+    (cookie && cookie.ticker) ?? 'TICK'
+  );
   const [symbolId, setSymbolId] = React.useState(
-    cookie ? cookie.symbolId : uuidv4()
+    (cookie && cookie.symbolId) ?? uuidv4()
   );
   const [brokerageId, setBrokerageId] = React.useState(
-    cookie ? cookie.brokerageId : uuidv4()
+    (cookie && cookie.brokerageId) ?? uuidv4()
   );
   const [accountIds, setAccountIds] = React.useState(
-    cookie ? cookie.accountIds : []
+    (cookie && cookie.accountIds) ?? []
   );
   const [tradeSide, setTradeSide] = React.useState(
-    cookie ? cookie.tradeSide : TradeSide.BUY
+    (cookie && cookie.tradeSide) ?? TradeSide.BUY
   );
   const [quantityType, setQuantityType] = React.useState(
-    cookie ? cookie.quantityType : QuantityType.SHARES
+    (cookie && cookie.quantityType) ?? QuantityType.SHARES
   );
   const [routingType, setRoutingType] = React.useState(
-    cookie ? cookie.routingType : RoutingType.STP
+    (cookie && cookie.routingType) ?? RoutingType.STP
   );
   const [quantityMin, setQuantityMin] = React.useState(
-    cookie ? cookie.quantityMin : 3
+    (cookie && cookie.quantityMin) ?? 3
   );
   const [quantityMax, setQuantityMax] = React.useState(
-    cookie ? cookie.quantityMax : 5
+    (cookie && cookie.quantityMax) ?? 5
   );
   const [assetType, setAssetType] = React.useState(
-    cookie ? cookie.assetType : AssetType.Equity
+    (cookie && cookie.assetType) ?? AssetType.Equity
   );
   const [xRouteSetId, setXRouteSetId] = React.useState(
-    cookie ? cookie.xRouteSetId : uuidv4()
+    (cookie && cookie.xRouteSetId) ?? uuidv4()
   );
 
   if (accountIds.length > accountTradeCount) {
@@ -104,7 +108,7 @@ export default () => {
   useEffect(() => {
     setAccountTrades(buildAccountTrades);
   }, [
-    requestId,
+    state,
     accountTradeCount,
     ticker,
     symbolId,
@@ -122,7 +126,7 @@ export default () => {
   const sql: string = BuildSql(accountTrades, assetType, xRouteSetId);
 
   cookie = {
-    requestId,
+    state,
     accountTradeCount,
     ticker,
     symbolId,
@@ -241,7 +245,7 @@ export default () => {
         ></textarea>
       </div>
       <div className="input-group">
-        <button onClick={() => setRequestId(uuidv4())}>Regenerate</button>
+        <button onClick={() => setState(uuidv4())}>Regenerate</button>
       </div>
     </div>
   );
