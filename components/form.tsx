@@ -25,12 +25,7 @@ export default () => {
   const requestId = uuidv4();
   const cookieStartIndex = document.cookie.indexOf('formData');
   const cookieLastIndex = document.cookie.lastIndexOf('}');
-  console.log(
-    document.cookie.substring(
-      cookieStartIndex + 'formData='.length,
-      cookieLastIndex + 1
-    )
-  );
+
   let cookie: ICookie =
     cookieStartIndex >= 0
       ? JSON.parse(
