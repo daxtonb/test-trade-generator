@@ -23,11 +23,22 @@ import { ICookie } from '../contracts/ICookie';
 
 export default () => {
   const requestId = uuidv4();
-  const cookieIndex = document.cookie.indexOf('formData');
-  console.log(document.cookie.substring(cookieIndex + 'formData='.length));
+  const cookieStartIndex = document.cookie.indexOf('formData');
+  const cookieLastIndex = document.cookie.lastIndexOf('}');
+  console.log(
+    document.cookie.substring(
+      cookieStartIndex + 'formData='.length,
+      cookieLastIndex + 1
+    )
+  );
   let cookie: ICookie =
-    cookieIndex >= 0
-      ? JSON.parse(document.cookie.substring(cookieIndex + 'formData='.length))
+    cookieStartIndex >= 0
+      ? JSON.parse(
+          document.cookie.substring(
+            cookieStartIndex + 'formData='.length,
+            cookieLastIndex + 1
+          )
+        )
       : null;
 
   const [state, setState] = React.useState(
