@@ -292,30 +292,33 @@ function BuildSql(
       assetType === AssetType.MutualFund
         ? 'PendingMfAllocationTrade'
         : 'PendingAllocationTrade',
-    entities: accountTrades
-      .map((x: IAccountTrade, index: number) =>
-        x.allocationTrades.map((y: IAllocationTrade) =>
-          assetType === AssetType.MutualFund
-            ? new PendingMfAllocationTrade(
-                x,
-                y,
-                pendingAccountTradeDbEntities.entities[
-                  index
-                ] as IPendingMfAccountTrade
-              )
-            : new PendingAllocationTrade(
-                x,
-                y,
-                pendingAccountTradeDbEntities.entities[
-                  index
-                ] as IPendingAccountTrade
-              )
+    entities:
+      accountTrades &&
+      accountTrades.length &&
+      accountTrades
+        .map((x: IAccountTrade, index: number) =>
+          x.allocationTrades.map((y: IAllocationTrade) =>
+            assetType === AssetType.MutualFund
+              ? new PendingMfAllocationTrade(
+                  x,
+                  y,
+                  pendingAccountTradeDbEntities.entities[
+                    index
+                  ] as IPendingMfAccountTrade
+                )
+              : new PendingAllocationTrade(
+                  x,
+                  y,
+                  pendingAccountTradeDbEntities.entities[
+                    index
+                  ] as IPendingAccountTrade
+                )
+          )
         )
-      )
-      .reduce(
-        (prev: PendingAllocationTrade[], next: PendingAllocationTrade[]) =>
-          prev && [...prev, ...next]
-      ),
+        .reduce(
+          (prev: PendingAllocationTrade[], next: PendingAllocationTrade[]) =>
+            prev && [...prev, ...next]
+        ),
   };
 
   const entities: IDbEntities<any>[] = [
