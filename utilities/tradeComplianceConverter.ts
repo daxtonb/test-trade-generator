@@ -11,7 +11,7 @@ interface IComplianceTrade {
   tradeQuantity: number;
   side: string;
   quantityType: QuantityType;
-  brokerageId: string;
+  executionRouteSetId: string;
   routingType: string;
   accountTrades: IComplianceAccountTrade[];
 }
@@ -37,8 +37,14 @@ export default function convertFromTradeRouting(
   if (!accountTrades || !accountTrades.length) {
     return {} as IComplianceTrade;
   }
-  const { ticker, side, brokerageId, routingType, symbolId, quantityType } =
-    accountTrades[0];
+  const {
+    ticker,
+    side,
+    executionRouteSetId,
+    routingType,
+    symbolId,
+    quantityType,
+  } = accountTrades[0];
   let totalQuantity = 0;
 
   accountTrades.forEach((x) => (totalQuantity += x.quantity));
@@ -46,7 +52,7 @@ export default function convertFromTradeRouting(
   return {
     ticker,
     symbolId,
-    brokerageId,
+    executionRouteSetId,
     side,
     tradeQuantity: totalQuantity,
     quantityType,
